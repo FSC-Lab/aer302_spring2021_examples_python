@@ -192,6 +192,7 @@ plt.tight_layout()
 
 plt.show()
 
+# no control vs. control based on linearized system
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 
 axs[0].plot(ta, xa[:,0], lw=lw, label='no control')
