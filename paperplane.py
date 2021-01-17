@@ -2,6 +2,8 @@ import numpy as np
 from math import sin, cos, atan, sqrt, pi
 from scipy.integrate import ode
 
+from control import ss, initial_response, step_response
+
 import matplotlib.pyplot as plt
 from matplotlib import rc
 rc('text', usetex=True)
@@ -48,7 +50,7 @@ to		= 0				# Initial Time, sec
 tf		= 6				# Final Time, sec
 tspan	= [to, tf]
 
-################# equation of motion ################
+################# nolinear system solution ################
 def EqMotion(t,x):
 	# Fourth-Order Equations of Aircraft Motion
 	
@@ -63,7 +65,7 @@ def EqMotion(t,x):
 
 	return xdot
 
-####################### solutions #####################
+# integrator
 def integrate(xo, to=to, tf=tf, dt=0.1):
 
 	solver = ode(EqMotion).set_integrator('dopri5')
@@ -89,6 +91,41 @@ tc, xc = integrate(np.array([1.5*Ve, 0, H, R]))
 # d) Effect of Further Increase in Initial Velocity
 td, xd = integrate(np.array([3.0*Ve, 0, H, R]))
 
+
+################# state-space model and solution ################
+# no control input
+A = np.array([[-rho*Ve*CD*S/m,	-g*cos(Gammae)],
+   	 		  [rho*CL*S/m,		 g*sin(Gammae)/Ve]])
+B = np.zeros((2,1))
+C = np.identity(2)
+D = np.zeros((2,1))
+sys1 = ss(A,B,C,D)
+
+X0a = np.array([Ve, Gammae])
+X0b = np.array([Ve, 0])
+X0c = np.array([1.5*Ve, 0])
+X0d = np.array([3*Ve, 0])
+
+tl = np.linspace(to, tf, int((tf-to)/0.01))
+_, ya = initial_response(sys1, X0=X0a, T=tl)
+_, yb = initial_response(sys1, X0=X0b, T=tl)
+_, yc = initial_response(sys1, X0=X0c, T=tl)
+_, yd = initial_response(sys1, X0=X0d, T=tl)
+
+
+# step control input
+Ahat = np.array([[2*g*sin(Gammae)/Ve, 	-g*cos(Gammae)],
+        		[2*g*cos(Gammae)/(Ve**2), g*sin(Gammae)/Ve]])
+Bhat = np.array([[2*g*cos(Gammae) * kappa * CLa],
+        		[g*cos(Gammae) / (Ve*Alphae)]])
+Chat = np.identity(2)
+Dhat = np.zeros((2,1))
+sys2 = ss(Ahat,Bhat,Chat,Dhat)
+
+deltaAlpha = 10*pi/180
+_, y = step_response(sys2, T=tl)
+Vl = y[0,:] + Ve
+Gammal = y[1,:]*deltaAlpha + Gammae
 
 ######################### plot #######################
 lw = 2
@@ -144,6 +181,93 @@ axs[1, 1].plot(tc, xc[:,3], lw=lw, label=r'$1.5V_e, \gamma_0=0$')
 axs[1, 1].plot(td, xd[:,3], lw=lw, label=r'$3V_e, \gamma_0=0$')
 axs[1, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
 axs[1, 1].set_ylabel('Range, ' + r'$rad$', fontsize=fs)
+
+for ax in axs:
+	for axx in ax: 
+		axx.grid()
+		axx.tick_params(axis='both', which='major', labelsize=fs)
+		axx.tick_params(axis='both', which='minor', labelsize=fs)
+axs[0, 1].legend(fontsize=fs)
+plt.tight_layout()
+
+plt.show()
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+
+axs[0].plot(ta, xa[:,0], lw=lw, label='no control')
+axs[0].plot(tl, Vl, lw=lw, label='linearized control,\n'+r'$\Delta\alpha = 10 deg$')
+axs[0].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[0].set_ylabel('Velocity, ' + r'$m/s$', fontsize=fs)
+
+axs[1].plot(ta, xa[:,0], lw=lw, label='no control')
+axs[1].plot(tl, Gammal, lw=lw, label='linearized control,\n'+r'$\Delta\alpha = 10 deg$')
+axs[1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[1].set_ylabel('Flight Path Angle, ' + r'$rad$', fontsize=fs)
+
+for ax in axs:
+	ax.grid()
+	ax.tick_params(axis='both', which='major', labelsize=fs)
+	ax.tick_params(axis='both', which='minor', labelsize=fs)
+axs[1].legend(fontsize=fs)
+plt.tight_layout()
+
+plt.show()
+
+# nonlinear vs. linear initial responses: velocity
+fig, axs = plt.subplots(2, 2,figsize=(10, 10))
+
+axs[0, 0].plot(ta, xa[:,0], lw=lw, label='numerical')
+axs[0, 0].plot(tl, ya[0,:], lw=lw, label='linearized')
+axs[0, 0].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[0, 0].set_ylabel('Velocity, ' + r'$m/s$', fontsize=fs)
+
+axs[0, 1].plot(tb, xb[:,0], lw=lw, label='numerical')
+axs[0, 1].plot(tl, yb[0,:], lw=lw, label='linearized')
+axs[0, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[0, 1].set_ylabel('Velocity, ' + r'$m/s$', fontsize=fs)
+
+axs[1, 0].plot(tc, xc[:,0], lw=lw, label='numerical')
+axs[1, 0].plot(tl, yc[0,:], lw=lw, label='linearized')
+axs[1, 0].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[1, 0].set_ylabel('Velocity, ' + r'$m/s$', fontsize=fs)
+
+axs[1, 1].plot(td, xd[:,0], lw=lw, label='numerical')
+axs[1, 1].plot(tl, yd[0,:], lw=lw, label='linearized')
+axs[1, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[1, 1].set_ylabel('Velocity, ' + r'$m/s$', fontsize=fs)
+
+for ax in axs:
+	for axx in ax: 
+		axx.grid()
+		axx.tick_params(axis='both', which='major', labelsize=fs)
+		axx.tick_params(axis='both', which='minor', labelsize=fs)
+axs[0, 1].legend(fontsize=fs)
+plt.tight_layout()
+
+plt.show()
+
+# nonlinear vs. linear initial responses: flight path angle
+fig, axs = plt.subplots(2, 2,figsize=(10, 10))
+
+axs[0, 0].plot(ta, xa[:,1], lw=lw, label='numerical')
+axs[0, 0].plot(tl, ya[1,:], lw=lw, label='linearized')
+axs[0, 0].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[0, 0].set_ylabel(r'$\gamma$', fontsize=fs)
+
+axs[0, 1].plot(tb, xb[:,1], lw=lw, label='numerical')
+axs[0, 1].plot(tl, yb[1,:], lw=lw, label='linearized')
+axs[0, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[0, 1].set_ylabel(r'$\gamma$', fontsize=fs)
+
+axs[1, 0].plot(tc, xc[:,1], lw=lw, label='numerical')
+axs[1, 0].plot(tl, yc[1,:], lw=lw, label='linearized')
+axs[1, 0].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[1, 0].set_ylabel(r'$\gamma$', fontsize=fs)
+
+axs[1, 1].plot(td, xd[:,1], lw=lw, label='numerical')
+axs[1, 1].plot(tl, yd[1,:], lw=lw, label='linearized')
+axs[1, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
+axs[1, 1].set_ylabel(r'$\gamma$', fontsize=fs)
 
 for ax in axs:
 	for axx in ax: 
