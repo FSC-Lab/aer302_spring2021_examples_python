@@ -27,7 +27,7 @@ Gamma_star 		= -atan(1 / LD_star)       	# Corresponding Flight Path Angle, rad
 Gamma_starDeg 	= Gamma_star * 180/pi
 V_star      	= sqrt(2 * m * g * cos(Gamma_star)/(rho * S * (CL_star)))
 #Ve      		= sqrt(2 * m * g /(rho * S * (CLe * cos(Gammae) - CDe * sin(Gammae))))
-                                        	# Corresponding Velocity, m/s
+                                            # Corresponding Velocity, m/s
 Alpha_star 	  	=	CL_star / CLa           # Corresponding Angle of Attack, rad
 Alpha_starDeg 	= Alpha_star * 180/pi
 
@@ -52,36 +52,36 @@ tspan	= [to, tf]
 
 ################# nolinear system solution ################
 def EqMotion(t,x):
-	# Fourth-Order Equations of Aircraft Motion
-	
-	V 	= x[0]
-	Gam	= x[1]
-	q	= 0.5 * rho * V**2	# Dynamic Pressure, N/m^2
-	
-	xdot = np.array([(-CD * q * S - m * g * sin(Gam)) / m,
-					 (CL * q * S - m * g * cos(Gam)) / (m * V),
-					 V * sin(Gam),
-					 V * cos(Gam)])
+    # Fourth-Order Equations of Aircraft Motion
+    
+    V 	= x[0]
+    Gam	= x[1]
+    q	= 0.5 * rho * V**2	# Dynamic Pressure, N/m^2
+    
+    xdot = np.array([(-CD * q * S - m * g * sin(Gam)) / m,
+                     (CL * q * S - m * g * cos(Gam)) / (m * V),
+                     V * sin(Gam),
+                     V * cos(Gam)])
 
-	return xdot
+    return xdot
 
 # integrator
 def integrate(xo, to=to, tf=tf, dt=0.1):
 
-	solver = ode(EqMotion).set_integrator('dopri5')
-	# a) Equilibrium Glide at Maximum Lift/Drag Ratio
-	ts, xs = [], []
-	solver.set_initial_value(xo, to)
-	while solver.successful() and solver.t < tf:
-		solver.integrate(solver.t + 0.1)
-		ts.append(solver.t)
-		xs.append(solver.y)
+    solver = ode(EqMotion).set_integrator('dopri5')
+    # a) Equilibrium Glide at Maximum Lift/Drag Ratio
+    ts, xs = [], []
+    solver.set_initial_value(xo, to)
+    while solver.successful() and solver.t < tf:
+        solver.integrate(solver.t + 0.1)
+        ts.append(solver.t)
+        xs.append(solver.y)
 
-	return np.asarray(ts), np.asarray(xs)
+    return np.asarray(ts), np.asarray(xs)
 
 # a) Equilibrium Glide at Maximum Lift/Drag Ratio
 ta, xa = integrate(np.array([Ve, Gammae, H, R]))
-	
+    
 # # b) Oscillating Glide due to Zero Initial Flight Path Angle
 tb, xb = integrate(np.array([Ve, 0, H, R]))
 
@@ -95,7 +95,7 @@ td, xd = integrate(np.array([3.0*Ve, 0, H, R]))
 ################# state-space model and solution ################
 # no control input
 A = np.array([[-rho*Ve*CD*S/m,	-g*cos(Gammae)],
-   	 		  [rho*CL*S/m,		 g*sin(Gammae)/Ve]])
+                  [rho*CL*S/m,		 g*sin(Gammae)/Ve]])
 B = np.zeros((2,1))
 C = np.identity(2)
 D = np.zeros((2,1))
@@ -115,9 +115,9 @@ _, yd = initial_response(sys1, X0=X0d, T=tl)
 
 # step control input
 Ahat = np.array([[2*g*sin(Gammae)/Ve, 	-g*cos(Gammae)],
-        		[2*g*cos(Gammae)/(Ve**2), g*sin(Gammae)/Ve]])
+                [2*g*cos(Gammae)/(Ve**2), g*sin(Gammae)/Ve]])
 Bhat = np.array([[2*g*cos(Gammae) * kappa * CLa],
-        		[g*cos(Gammae) / (Ve*Alphae)]])
+                [g*cos(Gammae) / (Ve*Alphae)]])
 Chat = np.identity(2)
 Dhat = np.zeros((2,1))
 sys2 = ss(Ahat,Bhat,Chat,Dhat)
@@ -183,10 +183,10 @@ axs[1, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
 axs[1, 1].set_ylabel('Range, ' + r'$rad$', fontsize=fs)
 
 for ax in axs:
-	for axx in ax: 
-		axx.grid()
-		axx.tick_params(axis='both', which='major', labelsize=fs)
-		axx.tick_params(axis='both', which='minor', labelsize=fs)
+    for axx in ax: 
+        axx.grid()
+        axx.tick_params(axis='both', which='major', labelsize=fs)
+        axx.tick_params(axis='both', which='minor', labelsize=fs)
 axs[0, 1].legend(fontsize=fs)
 plt.tight_layout()
 
@@ -206,9 +206,9 @@ axs[1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
 axs[1].set_ylabel('Flight Path Angle, ' + r'$rad$', fontsize=fs)
 
 for ax in axs:
-	ax.grid()
-	ax.tick_params(axis='both', which='major', labelsize=fs)
-	ax.tick_params(axis='both', which='minor', labelsize=fs)
+    ax.grid()
+    ax.tick_params(axis='both', which='major', labelsize=fs)
+    ax.tick_params(axis='both', which='minor', labelsize=fs)
 axs[1].legend(fontsize=fs)
 plt.tight_layout()
 
@@ -238,10 +238,10 @@ axs[1, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
 axs[1, 1].set_ylabel('Velocity, ' + r'$m/s$', fontsize=fs)
 
 for ax in axs:
-	for axx in ax: 
-		axx.grid()
-		axx.tick_params(axis='both', which='major', labelsize=fs)
-		axx.tick_params(axis='both', which='minor', labelsize=fs)
+    for axx in ax: 
+        axx.grid()
+        axx.tick_params(axis='both', which='major', labelsize=fs)
+        axx.tick_params(axis='both', which='minor', labelsize=fs)
 axs[0, 1].legend(fontsize=fs)
 plt.tight_layout()
 
@@ -271,10 +271,10 @@ axs[1, 1].set_xlabel('Time, ' + r'$t$', fontsize=fs)
 axs[1, 1].set_ylabel(r'$\gamma$', fontsize=fs)
 
 for ax in axs:
-	for axx in ax: 
-		axx.grid()
-		axx.tick_params(axis='both', which='major', labelsize=fs)
-		axx.tick_params(axis='both', which='minor', labelsize=fs)
+    for axx in ax: 
+        axx.grid()
+        axx.tick_params(axis='both', which='major', labelsize=fs)
+        axx.tick_params(axis='both', which='minor', labelsize=fs)
 axs[0, 1].legend(fontsize=fs)
 plt.tight_layout()
 
