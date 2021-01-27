@@ -9,30 +9,32 @@ from matplotlib import rc
 
 rc("text", usetex=True)
 
-################# basic parameters #################
+""" basic parameters """
 S = 0.017  # Reference Area, m^2
 AR = 0.86  # Wing Aspect Ratio
 e = 0.9  # Oswald Efficiency Factor
 m = 0.003  # Mass, kg
 g = 9.8  # Gravitational acceleration, m/s^2
 rho = 1.225  # Air density at Sea Level, kg/m^3
-CLa = pi * AR / (1 + sqrt(1 + (AR / 2) ** 2))  # Lift-Coefficient Slope, per rad
+CLa = (
+    pi * AR / (1 + sqrt(1 + (AR / 2) ** 2))
+)  # Lift-Coefficient Slope, per rad
 CDo = 0.02  # Zero-Lift Drag Coefficient
 kappa = 1 / (3.141592 * e * AR)  # Induced Drag Factor
 
-################ optimal Condition at (CL/CD)max ################
+""" optimal Condition at (CL/CD)max """
 CL_star = sqrt(CDo / kappa)  # CL for Maximum Lift/Drag Ratio
 CD_star = CDo + kappa * CL_star ** 2  # Corresponding CD
 LD_star = CL_star / CD_star  # Maximum Lift/Drag Ratio
 Gamma_star = -atan(1 / LD_star)  # Corresponding Flight Path Angle, rad
 Gamma_starDeg = Gamma_star * 180 / pi
 V_star = sqrt(2 * m * g * cos(Gamma_star) / (rho * S * (CL_star)))
-# Ve      		= sqrt(2 * m * g /(rho * S * (CLe * cos(Gammae) - CDe * sin(Gammae))))
+# Ve = sqrt(2 * m * g /(rho * S * (CLe * cos(Gammae) - CDe * sin(Gammae))))
 # Corresponding Velocity, m/s
 Alpha_star = CL_star / CLa  # Corresponding Angle of Attack, rad
 Alpha_starDeg = Alpha_star * 180 / pi
 
-########## equilibrium condition  under a fixed alpha ##########
+""" equilibrium condition  under a fixed alpha """
 Alphae = 8 * pi / 180  # assume constant angle of attack, rad
 # Alpha =   Alphae + 10 * pi/180		# angle of attack, rad
 CLe = CLa * Alphae
@@ -42,7 +44,7 @@ CD = CDe
 Gammae = -atan(1 / (CLe / CDe))
 Ve = sqrt(2 * m * g * cos(Gammae) / (rho * S * (CLe)))
 
-################# initial conditions ################
+""" initial conditions """
 Vo = Ve  # initial velocity, m/s
 H = 2  # Initial Height, m
 R = 0  # Initial Range, m
@@ -51,7 +53,7 @@ to = 0  # Initial Time, sec
 tf = 6  # Final Time, sec
 tspan = [to, tf]
 
-################# nolinear system solution ################
+""" nolinear system solution """
 
 
 def EqMotion(t, x):
@@ -103,7 +105,7 @@ tc, xc = integrate(np.array([1.5 * Ve, 0, H, R]))
 td, xd = integrate(np.array([3.0 * Ve, 0, H, R]))
 
 
-################# state-space model and solution ################
+""" state-space model and solution """
 # no control input
 A = np.array(
     [
@@ -147,7 +149,7 @@ _, y = step_response(sys2, T=tl)
 Vl = y[0, :] + Ve
 Gammal = y[1, :] * deltaAlpha + Gammae
 
-######################### plot #######################
+""" plot """
 lw = 2
 fs = 20
 
@@ -216,13 +218,15 @@ plt.show()
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 
 axs[0].plot(ta, xa[:, 0], lw=lw, label="no control")
-axs[0].plot(tl, Vl, lw=lw, label="linearized control,\n" + r"$\Delta\alpha = 10 deg$")
+axs[0].plot(
+    tl, Vl, lw=lw, label=r"linearized control,\n$\Delta\alpha = 10 deg$"
+)
 axs[0].set_xlabel("Time, " + r"$t$", fontsize=fs)
 axs[0].set_ylabel("Velocity, " + r"$m/s$", fontsize=fs)
 
 axs[1].plot(ta, xa[:, 0], lw=lw, label="no control")
 axs[1].plot(
-    tl, Gammal, lw=lw, label="linearized control,\n" + r"$\Delta\alpha = 10 deg$"
+    tl, Gammal, lw=lw, label=r"linearized control,\n$\Delta\alpha = 10 deg$"
 )
 axs[1].set_xlabel("Time, " + r"$t$", fontsize=fs)
 axs[1].set_ylabel("Flight Path Angle, " + r"$rad$", fontsize=fs)
