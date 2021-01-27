@@ -5,9 +5,22 @@ from scipy.integrate import ode
 from control import ss, initial_response, step_response
 
 import matplotlib.pyplot as plt
-from matplotlib import rc
 
-rc("text", usetex=True)
+import argparse
+
+ap = argparse.ArgumentParser("AER302 Paperplane example")
+ap.add_argument(
+    "--latex",
+    action="store_true",
+    default=False,
+    help="Toggles use of LaTeX backend on / off",
+)
+
+args = ap.parse_args()
+if args.latex:
+    from matplotlib import rc
+
+    rc("text", usetex=True)
 
 """ basic parameters """
 S = 0.017  # Reference Area, m^2
