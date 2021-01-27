@@ -230,14 +230,14 @@ fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 
 axs[0].plot(ta, xa[:, 0], lw=lw, label="no control")
 axs[0].plot(
-    tl, Vl, lw=lw, label=r"linearized control,\n$\Delta\alpha = 10 deg$"
+    tl, Vl, lw=lw, label="linearized control,\n"+ r"$\Delta\alpha = 10 deg$"
 )
 axs[0].set_xlabel("Time, " + r"$t$", fontsize=fs)
 axs[0].set_ylabel("Velocity, " + r"$m/s$", fontsize=fs)
 
 axs[1].plot(ta, xa[:, 0], lw=lw, label="no control")
 axs[1].plot(
-    tl, Gammal, lw=lw, label=r"linearized control,\n$\Delta\alpha = 10 deg$"
+    tl, Gammal, lw=lw, label="linearized control,\n" + r"$\Delta\alpha = 10 deg$"
 )
 axs[1].set_xlabel("Time, " + r"$t$", fontsize=fs)
 axs[1].set_ylabel("Flight Path Angle, " + r"$rad$", fontsize=fs)
