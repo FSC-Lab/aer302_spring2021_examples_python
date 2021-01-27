@@ -1,12 +1,10 @@
-import numpy as np
-from math import sin, cos, atan, sqrt, pi
-from scipy.integrate import ode
-
-from control import ss, initial_response, step_response
+import argparse
+from math import atan, cos, pi, sin, sqrt
 
 import matplotlib.pyplot as plt
-
-import argparse
+import numpy as np
+from control import initial_response, ss, step_response
+from scipy.integrate import ode
 
 ap = argparse.ArgumentParser("AER302 Paperplane example")
 ap.add_argument(
