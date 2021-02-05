@@ -1,7 +1,6 @@
 import SAM
 from aircraft import CP1
-from funcs import power_required, power_available, climb_rate
-from funcs import hodograph, power_vs_v
+from funcs import *
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,6 +24,8 @@ Vsx, Vsy = hodograph(Vs, Gmm_Vs)
 Vh = np.linspace(10, 210, 100)
 PR_Vh, PA_Vh, RC_Vh, Gmm_Vh = power_vs_v(
 								CP1, SAM.tropo(h), Vh)
+V_PRmin_h = min_power_required(CP1, SAM.tropo(h))
+RCmax_h = climb_rate(CP1, V_PRmin_h, SAM.tropo(h))
 Vhx, Vhy = hodograph(Vh, Gmm_Vh)
 
 
@@ -33,5 +34,6 @@ plt.plot(Vs, PA_Vs)
 plt.plot(Vs, PR_Vs)
 plt.plot(Vh, PA_Vh)
 plt.plot(Vh, PR_Vh)
+plt.grid()
 # plt.plot(Vsx, Vsy)
 plt.show()

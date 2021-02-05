@@ -1,7 +1,7 @@
 import SAM
 from aircraft import CP1
 
-from math import sin, cos, asin
+from math import sin, cos, asin, sqrt
 
 def power_required(plane, V, air):
 
@@ -17,6 +17,11 @@ def power_required(plane, V, air):
     # PR = plane.W*(num/den)
 
     return PR
+
+def min_power_required(plane, air):
+    V_PRmin = sqrt(2*plane.W/plane.S/air.rho/
+                    sqrt(3*plane.CD0/plane.K))
+    return V_PRmin
 
 def power_available(plane, air):
     if plane.engine == 'prop':
@@ -51,24 +56,7 @@ def power_vs_v(plane, air, Vs):
 
     return PR, PA, RC, Gmm
 
-# # minimum power from graphics
-# [PRmin_s,iMin_s] = min(PR_s)
-# VPRmin_s = 10+iMin_s*1
-# [PRmin_h,iMin_h] = min(PR_h)
-# VPRmin_h = (10+iMin_h*1)* sqrt(rho_s / rho_h)
-
-# # minimum power from calculation (analytical)
-# VPRmin_s_calc = sqrt( 2*WS / rho_s / sqrt(3*C_D_0/K) )
-# VPRmin_h_calc = sqrt( 2*WS / rho_h / sqrt(3*C_D_0/K) )
-
-# # maximum rate of climb
-# VRC_max_s_calc = VPRmin_s_calc
-# VRC_max_h_calc = VPRmin_h_calc
-# C_D_rcmax = 4*C_D_0 # C_D_0 = 1/3 K CL^2
-# RCmax_s = (PAs - PRmin_s)/W
-# RCmax_h = (PAs * sqrt(rho_h / rho_s) - PRmin_h)/W
-
-
+# TODO 1:
 # # maximum angle of climb
 # poly_s = [1/2 *rho_s^2* C_D_0/WS 0 0 1/2*rho_s*PAs/W -2*K*WS]
 # poly_h = [1/2 *rho_h^2* C_D_0/WS 0 0 1/2*rho_h*(PAs * sqrt(rho_h / rho_s))/W -2*K*WS]
@@ -92,21 +80,7 @@ def power_vs_v(plane, air, Vs):
 # gammamax_h = asin(RC_gamma_h / Vgammamax_h_est) * 180/pi
 
 
-
-
-# figure(1)
-# plot(Vs,PR_s,'-',Vs,PA_s,'-',Vh,PR_h,'--',Vh,PA_h,'--',VPRmin_s,PRmin_s,'o',VPRmin_h,PRmin_h,'*')
-# axis([0 250 0 2e06])
-# # plot(V,Pr_s,'-',V,Pa_s,'-',Vh,Pr_h,'--',Vh,Pa_h,'--')
-# #plot(V,Pr_s,V,Pa_s,Vh,Pr_h,Vh,Pa_h)
-# title('Power Required and Available for CP1')
-# xlabel(' velocity (m/s)')
-# ylabel(' power (N m/s)')
-# legend('PR at sea level','PA at sea level',['PR at altitude ' num2str(h) ' m'],['PA at altitude ' num2str(h) ' m'])
-# htype = findobj(gcf,'type','line')
-# set(htype,'linewidth',2)
-# # plotdlg
-
+# TODO 2:
 # # get a sense of corresponding speed with respect to P_A
 # P = PAs * sqrt(rho_h / rho_s)
 # v = 0.1:1:100
@@ -121,16 +95,4 @@ def power_vs_v(plane, air, Vs):
 # # plot(v,f1,v,f2)
 # htype = findobj(gcf,'type','line')
 # set(htype,'linewidth',2)
-
-# figure(3)
-# plot(Vh_s,Vv_s,'-',Vh_h,Vv_h,'--')
-# title(' Hodograph for [CP1]')
-# legend('sea-level', '6000m')
-# axis([0 100 0 10]) 
-# xlabel(' Vh (m/s)')
-# ylabel('Vv (m/s)')
-# htype = findobj(gcf,'type','line')
-# set(htype,'linewidth',2)
-# # plotdlg  
-
   
