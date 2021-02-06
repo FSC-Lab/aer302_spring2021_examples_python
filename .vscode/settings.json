@@ -4,5 +4,8 @@
   "python.formatting.blackArgs": [
     "--line-length",
     "79"
-  ]
+  ],
+  "python.autoComplete.extraPaths": [
+    "./performance"
+  ],
 }
