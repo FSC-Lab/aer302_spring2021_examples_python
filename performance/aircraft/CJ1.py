@@ -18,6 +18,7 @@ C_L_max = 2.5
 C_L_ground = 1.0 		# maximum C_L on the ground
 
 # engine data
+engine = 'prop'
 Tengine = 16236 			# one of the two turbojet engines thrust (N)
 Fuel = 1119 				# fuel capacity (gal)
 Wf = 1119 * 6.67 * 4.448 	# gal * 6.67 (lb/gal of kerosene) * 4.48 (N/lb) = N
