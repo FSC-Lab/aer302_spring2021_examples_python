@@ -40,5 +40,7 @@ At this step, you should be ready to run the examples!
 ---
 
 To run the the performance analysis, you need to specify the plane, altitude, velocity, and the type of analysis (range, endurance, power, climb rate, etc). For example, to compute power required and available  
-| `python3 performance/examples.py -plane CP1 -H 1000 -V 60 -power`|  
-|Some analysis require an array of altitudes and velocities, see comments in performance/examples.py for detail
+```
+python3 performance/examples.py -plane CP1 -H 1000 -V 60 -power
+```
+Some analysis require an array of altitudes and velocities, see comments in performance/examples.py for detail  
