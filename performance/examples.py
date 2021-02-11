@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 h = 6000
-# airh = SAM.tropo(h)
 
 # performance at sea level
 Vminpr = 60
