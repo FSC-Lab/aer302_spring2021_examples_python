@@ -10,7 +10,7 @@ engine = 'prop'
 Ps = 171580 # propeller max power (W) at sea level
 eta = 0.8 # propulsion efficiency
 # Fuel = 1119 # fuel capacity (gal)
-# Wf = 1119 * 6.67 * 4.448 # gal * 6.67 (lb/gal of kerosene) * 4.48 (N/lb) = N
+Wf = 1119 * 6.67 * 4.448 # gal * 6.67 (lb/gal of kerosene) * 4.48 (N/lb) = N
 # TSFC = 0.6 # (lb of fuel) / (lb of thrust) (hr)
 
 # aerodynamics property

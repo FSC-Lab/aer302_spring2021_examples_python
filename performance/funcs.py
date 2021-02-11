@@ -1,7 +1,7 @@
 import SAM
 from aircraft import CP1
 
-from math import sin, cos, asin, sqrt
+from math import sin, cos, asin, sqrt, log
 
 def power_required(plane, V, air):
 
@@ -46,20 +46,23 @@ def climb_rate_max(plane, hs):
 
     RCmaxs = []
     for h in hs:
-        air = SAM.tropo(h)
+        if 0 <= h <= 11000:
+            air = SAM.tropo(h)
+        if h  > 11000:
+            air = SAM.strato(h)
         WS = plane.W/plane.S
-        if plane.engine = 'jet':
+        if plane.engine == 'jet':
             TW = plane.F_s*(air.rho/SAM.air_sea.rho)/plane.W
             WS = plane.W/plane.S
-            temp1 = WS*TW/(3*air.rho*plane.C_D_0)
-            temp2 = 1+sqrt(1+12*plane.K*plane.C_D_0/TW**2)
+            temp1 = WS*TW/(3*air.rho*plane.CD0)
+            temp2 = 1+sqrt(1+12*plane.K*plane.CD0/TW**2)
             V_rcmax = sqrt(temp1*temp2)
             q_rcmax = 0.5*air.rho*V_rcmax**2
-            RCmax = V_rcmax*(TW - q_rcmax*plane.C_D_0/WS - plane.K*WS/q_rcmax)
-        if plane.engine = 'prop':
+            RCmax = V_rcmax*(TW - q_rcmax*plane.CD0/WS - plane.K*WS/q_rcmax)
+        if plane.engine == 'prop':
             PA = plane.Ps*sqrt(air.rho/SAM.air_sea.rho)
-            PRmin = plane.W*sqrt(plane.K*plane.C_D_0)*4/sqrt(3)*
-                    sqrt(2*WS/sqrt(3*plane.C_D_0/plane.K)/air.rho)
+            PRmin = plane.W*sqrt(plane.K*plane.CD0)*4/sqrt(3)*\
+                    sqrt(2*WS/sqrt(3*plane.CD0/plane.K)/air.rho)
             RCmax = (PA - PRmin)/plane.W
         RCmaxs.append(RCmax)
 
@@ -70,8 +73,13 @@ def climb_rate_max(plane, hs):
         return RCmaxs
 
 def hodograph(V, gmm):
-    Vx = [v*cos(g) for v, g in zip(V, gmm)]
-    Vy = [v*sin(g) for v, g in zip(V, gmm)]
+
+    Vx, Vy = [], []
+    for v, g in zip(V, gmm):
+        if g > 0:
+            Vx.append(v*cos(g))
+            Vy.append(v*sin(g))
+    # print(Vx > 0)
     return Vx, Vy
 
 def power_vs_v(plane, air, Vs):
@@ -106,31 +114,32 @@ def CLsqrt_CD_vs_h(plane, V, h):
     CD = plane.CD0 + plane.K*CL**2
     return sqrt(CL)/CD
 
-def endurance(plane, air):
-    CL_CD_max = 1/(2*sqrt(plane.K*plane.C_D_0))
+def endurance(plane, h):
+    air = SAM.tropo(h)
+    CL_CD_max = 1/(2*sqrt(plane.K*plane.CD0))
     W0 = plane.W
     W1 = W0 - plane.Wf
     if plane.engine == 'jet':
         E = 1/plane.c_t*CL_CD_max*log(W0/W1)/3600
+
     # TODO
     if plane.engine == 'prop' :
-        air = SAM.tropo(h)
         E = 0
     return E
 
-def range(plane, air):
-    CLsqrt_CD_max = 3/4/sqrt(sqrt(3*plane.K*plane.C_D_0**3))
+def range(plane, h):
+    air = SAM.tropo(h)
+    CLsqrt_CD_max = 3/4/sqrt(sqrt(3*plane.K*plane.CD0**3))
     W0 = plane.W
     W1 = W0 - plane.Wf
-    air = SAM.tropo(h)
     if plane.engine == 'jet':
-        R = 2*sqrt(2/(air.rho*plane.S))/plane.c_t*
+        R = 2*sqrt(2/(air.rho*plane.S))/plane.c_t*\
             CLsqrt_CD_max*(sqrt(W0) - sqrt(W1))
     # TODO
     if plane.engine == 'prop':
         R = 0
 
-    return
+    return R
 
 # TODO 1:
 # # maximum angle of climb

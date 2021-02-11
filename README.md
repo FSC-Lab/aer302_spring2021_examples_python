@@ -32,7 +32,13 @@ pip3 install -r requirements.txt
 
 ---
 
-At this step, you should be ready to run the examples!
+At this step, you should be ready to run the examples! 
 | Linux / MacOS | Windows |
 |-|-|
 | `python3 paperplane.py` | `py paperplane.py` |
+
+---
+
+To run the the performance analysis, you need to specify the plane, altitude, velocity, and the type of analysis (range, endurance, power, climb rate, etc). For example, to compute power required and available
+| `python3 performance/examples.py -plane CP1 -H 1000 -V 60 -power`|
+Some analysis require an array of altitudes and velocities, see comments in performance/examples.py for detail
