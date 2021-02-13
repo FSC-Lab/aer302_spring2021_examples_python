@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # cj1tt.m - thrust  at sea level
 #
 # created on: 24-Sep-00

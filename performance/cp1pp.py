@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # cp1pp.m - power required and available, including climbing performance
 #
 # created on: 10.Feb.2020

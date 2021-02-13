@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # cj1pp.m - power required and available
 #
 # created on: 25-Sep-00
