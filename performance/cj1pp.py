@@ -13,30 +13,34 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ## basic data for CP1, P16 lecture 08
-import data
+from data import cj1data
 from utils import stdatm
 
 
 def main():
     ## power required at sea-level
     V0 = 152.4  # velocity for minimum power required
-    C_L = data.W / (0.5 * data.rho_s * V0 ** 2 * data.S)
-    C_D = data.C_D_0 + data.K * C_L ** 2
-    D0 = (0.5 * data.rho_s * V0 ** 2 * data.S) * C_D
+    C_L = cj1data.W / (0.5 * cj1data.rho_s * V0 ** 2 * cj1data.S)
+    C_D = cj1data.C_D_0 + cj1data.K * C_L ** 2
+    D0 = (0.5 * cj1data.rho_s * V0 ** 2 * cj1data.S) * C_D
 
     # because V0 is the velocity for minimum power required, RR0=PR1
     PR0 = D0 * V0
-    PR1 = data.W * sqrt(2 * data.WS / data.rho_s) / (C_L ** (3 / 2) / C_D)
+    PR1 = (
+        cj1data.W
+        * sqrt(2 * cj1data.WS / cj1data.rho_s)
+        / (C_L ** (3 / 2) / C_D)
+    )
 
     ## power required, power available plt.plots
     # at sea level
 
     Vs = np.arange(10, 410)
-    qsS = 0.5 * data.rho_s * Vs ** 2 * data.S
-    C_Ls = data.W / qsS
-    C_Ds = data.C_D_0 + data.K * C_Ls ** 2
+    qsS = 0.5 * cj1data.rho_s * Vs ** 2 * cj1data.S
+    C_Ls = cj1data.W / qsS
+    C_Ds = cj1data.C_D_0 + cj1data.K * C_Ls ** 2
     Ds = qsS * C_Ds
-    Fs = data.F_s
+    Fs = cj1data.F_s
     PR_s = Ds * Vs
     PA_s = Fs * Vs
 
@@ -44,14 +48,14 @@ def main():
     h = 6705.6
     T_h, p_h, rho_h = stdatm(h)
 
-    Vh = Vs * sqrt(data.rho_s / rho_h)
-    qS = 0.5 * rho_h * Vh ** 2 * data.S
-    C_L = data.W / qS
-    C_D = data.C_D_0 + data.K * C_L ** 2
+    Vh = Vs * sqrt(cj1data.rho_s / rho_h)
+    qS = 0.5 * rho_h * Vh ** 2 * cj1data.S
+    C_L = cj1data.W / qS
+    C_D = cj1data.C_D_0 + cj1data.K * C_L ** 2
     Dh = qS * C_D
-    Fh = (rho_h / data.rho_s) * Fs
+    Fh = (rho_h / cj1data.rho_s) * Fs
     PR_h = Dh * Vh
-    PA_h = PA_s * sqrt(rho_h / data.rho_s)
+    PA_h = PA_s * sqrt(rho_h / cj1data.rho_s)
 
     # minimum power
     PRmin_s, iMin_s = (min(PR_s), np.argmin(PR_s))
